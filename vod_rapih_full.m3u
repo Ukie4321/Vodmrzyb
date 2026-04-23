@@ -1,46 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<meta charset="UTF-8">
+<title>GD Player</title>
+
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+
+<style>
+body {
+  background: #0f172a;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  padding: 20px;
+}
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+input {
+  width: 75%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+}
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #22c55e;
+  color: white;
+  font-weight: bold;
+}
+video {
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+</style>
 </head>
-<body style="background:black;color:white;text-align:center">
 
-<h3>Universal Player</h3>
+<body>
 
-<input type="text" id="link" placeholder="Paste link di sini" style="width:80%">
-<br><br>
-<button onclick="play()">Play</button>
+<div class="container">
+  <h2>🎬 GD Player Clone</h2>
 
-<br><br>
+  <input type="text" id="gdrive" placeholder="Paste link Google Drive di sini">
+  <button onclick="loadVideo()">Play</button>
 
-<video id="video" controls width="100%"></video>
+  <video id="player" controls></video>
+</div>
 
 <script>
-function play() {
-  let url = document.getElementById("link").value;
-  const video = document.getElementById("video");
+const player = new Plyr('#player');
 
-  // DETECT GOOGLE DRIVE
-  if (url.includes("drive.google.com")) {
-    const id = url.split("/d/")[1]?.split("/")[0];
-    url = "https://vod.ukielaki88.workers.dev/?id=" + id;
+function loadVideo() {
+  let link = document.getElementById("gdrive").value;
+
+  // Ambil FILE ID Google Drive
+  let id = null;
+
+  if (link.includes("/file/d/")) {
+    id = link.split("/file/d/")[1].split("/")[0];
+  } else if (link.includes("id=")) {
+    id = link.split("id=")[1];
   }
 
-  video.pause();
-  video.removeAttribute("src");
-
-  if (url.endsWith(".m3u8")) {
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(url);
-      hls.attachMedia(video);
-    } else {
-      video.src = url;
-    }
-  } else {
-    video.src = url;
+  if (!id) {
+    alert("Link tidak valid!");
+    return;
   }
 
+  // 🔥 UBAH KE LINK WORKER
+  const worker = "https://vod.ukielaki88.workers.dev/?id=" + id;
+
+  // set video
+  const video = document.getElementById("player");
+  video.src = worker;
   video.play();
 }
 </script>
